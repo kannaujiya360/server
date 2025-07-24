@@ -7,15 +7,28 @@ const taskRoutes = require("./routes/taskRoutes");
 dotenv.config();
 
 const app = express();
-app.use(cors());
-app.use(express.json());
 
+
+const allowedOrigins = ['https://assesement5.vercel.app'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, 
+}));
+
+app.use(express.json());
 app.use("/api/tasks", taskRoutes);
 
-const PORT = process.env.PORT 
+const PORT = process.env.PORT;
 
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`✅ Server running at http://localhost:${PORT}`);
+    console.log(` Server running at http://localhost:${PORT}`);
   });
 });
